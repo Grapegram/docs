@@ -45,14 +45,29 @@ async function convertUML(code) {
   }
 }
 
-async function createPage(diagram, outputFile) {
+async function createPage(diagram, title, outputFile) {
   if (!createPage.template) {
     createPage.template = await fs.promises.readFile(PAGE_TEMPLATE, "utf-8");
   }
-  const pageContent = fillTemplate(createPage.template, { diagram });
+  const pageContent = fillTemplate(createPage.template, { diagram, title });
   const outputFolder = path.dirname(outputFile);
   await fs.promises.mkdir(outputFolder, { recursive: true });
   await fs.promises.writeFile(outputFile, pageContent);
+}
+
+async function processPage(umlContent, parentDirs) {
+  const pageFile = assemblyPageFilePath(parentDirs);
+  const diagram = await convertUML(umlContent);
+
+  let title;
+  if (parentDirs.length === 0) {
+    title = "Main diagram";
+  } else {
+    title = parentDirs.join(" ") + " diagram";
+  }
+
+  await createPage(diagram, title, pageFile);
+  console.log(`Converted: ${pageFile}`);
 }
 
 async function convertModule(dir, parentDirs = []) {
@@ -64,11 +79,8 @@ async function convertModule(dir, parentDirs = []) {
     if (entry.isDirectory()) {
       await convertModule(fullPath, [...parentDirs, entry.name]);
     } else if (entry.isFile() && entry.name === "main.puml") {
-      const content = await fs.promises.readFile(fullPath, "utf-8");
-      const pageFile = assemblyPageFilePath(parentDirs);
-      const diagram = await convertUML(content);
-      await createPage(diagram, pageFile);
-      console.log(`Converted: ${pageFile}`);
+      const umlContent = await fs.promises.readFile(fullPath, "utf-8");
+      await processPage(umlContent, parentDirs);
     }
   }
 }
