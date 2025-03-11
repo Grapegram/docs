@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="stylesheet" href="/styles.css" />
+        <title>{{ title }}</title>
+    </head>
+    <body>
+        <div id="diagram">{{ diagram }}</div>
+        <div id="back"><</div>
+        <script>
+            var backBtn = document.getElementById("back");
+            var isRoot = location.pathname == "/";
+            if (isRoot) {
+                backBtn.style.display = "none";
+            }
+            backBtn.addEventListener("click", () => history.back());
+        </script>
+    </body>
+</html>
