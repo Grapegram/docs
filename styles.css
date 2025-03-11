@@ -1,0 +1,34 @@
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+svg {
+    background: none !important;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+    min-height: 100dvh;
+    background-color: #222024;
+}
+
+#diagram {
+    height: auto;
+    width: auto;
+}
+
+#back {
+    position: absolute;
+    top: 50px;
+    left: 50px;
+    cursor: pointer;
+    color: white;
+    font-weight: 400;
+    font-size: 32px;
+}
