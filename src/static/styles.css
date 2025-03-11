@@ -34,6 +34,10 @@ body {
     font-size: 32px;
 }
 
-#back * {
-    filter: grayscale(0.25) brightness(0.75);
+.entity {
+    transition: 0.2s;
+}
+
+.back {
+    filter: blur(1px) grayscale(0.25) brightness(0.75);
 }

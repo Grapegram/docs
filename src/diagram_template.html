@@ -15,8 +15,8 @@
             var rels = {};
             var elemPattern = /entity (.*)/;
             var linkPattern = /link (.*) to (.*)/;
-            var front;
-            var back;
+            var front = [];
+            var back = [];
 
             function initNavigations() {
                 const backBtn = document.getElementById("backNav");
@@ -31,21 +31,6 @@
             function initDiagram() {
                 const baseEntitiesGroup =
                     diagram.querySelector(`[id^="elem_"]`).parentElement;
-                baseEntitiesGroup.style.visibility = "hidden";
-                const svg = baseEntitiesGroup.parentElement;
-                front = document.createElementNS(
-                    "http://www.w3.org/2000/svg",
-                    "g",
-                );
-                back = document.createElementNS(
-                    "http://www.w3.org/2000/svg",
-                    "g",
-                );
-                front.id = "front";
-                back.id = "back";
-                svg.appendChild(back);
-                svg.appendChild(front);
-
                 const entities = baseEntitiesGroup.childNodes;
                 for (var i = 0; i < entities.length; i += 2) {
                     const metadata = entities[i].textContent;
@@ -53,15 +38,18 @@
                     addElement(elem, metadata);
                 }
                 buildDiagramReletionships();
-                for (const elem in elems) {
-                    elems[elem].addEventListener("mouseenter", onHoverStart);
-                    elems[elem].addEventListener("mouseleave", onHoverEnd);
-                    front.appendChild(elems[elem]);
-                }
-                for (const link of links) {
-                    link.node.addEventListener("mouseenter", onHoverStart);
-                    link.node.addEventListener("mouseleave", onHoverEnd);
-                    front.appendChild(link.node);
+                bindEntities();
+            }
+
+            function bindEntities() {
+                const entities = [];
+                entities.push(...Object.values(elems));
+                entities.push(...links.map((l) => l.node));
+                for (const entity of entities) {
+                    entity.addEventListener("mouseenter", onHoverStart);
+                    entity.addEventListener("mouseleave", onHoverEnd);
+                    front.push(entity);
+                    entity.classList.add("entity");
                 }
             }
 
@@ -69,14 +57,14 @@
                 const elemMatch = metadata.match(elemPattern);
                 if (elemMatch) {
                     const name = elemMatch[1];
-                    elems[name] = element.cloneNode(true);
+                    elems[name] = element;
                     return;
                 }
                 const linkMatch = metadata.match(linkPattern);
                 if (linkMatch) {
                     const start = linkMatch[1];
                     const end = linkMatch[2];
-                    links.push({ start, end, node: element.cloneNode(true) });
+                    links.push({ start, end, node: element });
                     return;
                 }
             }
@@ -96,11 +84,11 @@
 
             function toggleAccentElements(elements, show) {
                 const toggleGroup = (fromGroup, toGroup) => {
-                    const fromElems = fromGroup.childNodes;
-                    for (let i = 0; i < fromElems.length; ) {
-                        const elem = fromElems[i];
+                    for (let i = 0; i < fromGroup.length; ) {
+                        const elem = fromGroup[i];
                         if (!elements.includes(elem)) {
-                            toGroup.appendChild(elem);
+                            fromGroup.splice(i, 1);
+                            toGroup.push(elem);
                         } else {
                             i++;
                         }
@@ -110,6 +98,12 @@
                     toggleGroup(front, back);
                 } else {
                     toggleGroup(back, front);
+                }
+                for (const elem of front) {
+                    elem.classList.remove("back");
+                }
+                for (const elem of back) {
+                    elem.classList.add("back");
                 }
             }
 
