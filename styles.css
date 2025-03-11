@@ -15,15 +15,16 @@ body {
     height: 100%;
     width: 100%;
     min-height: 100dvh;
-    background-color: #222024;
+    background-color: #1e1e1e;
 }
 
 #diagram {
     height: auto;
     width: auto;
+    position: relative;
 }
 
-#back {
+#backNav {
     position: absolute;
     top: 50px;
     left: 50px;
@@ -31,4 +32,12 @@ body {
     color: white;
     font-weight: 400;
     font-size: 32px;
+}
+
+.entity {
+    transition: 0.2s;
+}
+
+.back {
+    filter: blur(1px) grayscale(0.25) brightness(0.75);
 }
