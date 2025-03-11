@@ -8,14 +8,128 @@
     </head>
     <body>
         <div id="diagram">{{ diagram }}</div>
-        <div id="back"><</div>
+        <div id="backNav"><</div>
         <script>
-            var backBtn = document.getElementById("back");
-            var isRoot = location.pathname == "/docs/";
-            if (isRoot) {
-                backBtn.style.display = "none";
+            var elems = {};
+            var links = [];
+            var rels = {};
+            var elemPattern = /entity (.*)/;
+            var linkPattern = /link (.*) to (.*)/;
+            var front;
+            var back;
+
+            function initNavigations() {
+                const backBtn = document.getElementById("backNav");
+                const digram = document.getElementById("diagram");
+                const isRoot = location.pathname == "/docs/";
+                if (isRoot) {
+                    backBtn.style.display = "none";
+                }
+                backBtn.addEventListener("click", () => history.back());
             }
-            backBtn.addEventListener("click", () => history.back());
+
+            function initDiagram() {
+                const baseEntitiesGroup =
+                    diagram.querySelector(`[id^="elem_"]`).parentElement;
+                baseEntitiesGroup.style.visibility = "hidden";
+                const svg = baseEntitiesGroup.parentElement;
+                front = document.createElementNS(
+                    "http://www.w3.org/2000/svg",
+                    "g",
+                );
+                back = document.createElementNS(
+                    "http://www.w3.org/2000/svg",
+                    "g",
+                );
+                front.id = "front";
+                back.id = "back";
+                svg.appendChild(back);
+                svg.appendChild(front);
+
+                const entities = baseEntitiesGroup.childNodes;
+                for (var i = 0; i < entities.length; i += 2) {
+                    const metadata = entities[i].textContent;
+                    const elem = entities[i + 1];
+                    addElement(elem, metadata);
+                }
+                buildDiagramReletionships();
+                for (const elem in elems) {
+                    elems[elem].addEventListener("mouseenter", onHoverStart);
+                    elems[elem].addEventListener("mouseleave", onHoverEnd);
+                    front.appendChild(elems[elem]);
+                }
+                for (const link of links) {
+                    link.node.addEventListener("mouseenter", onHoverStart);
+                    link.node.addEventListener("mouseleave", onHoverEnd);
+                    front.appendChild(link.node);
+                }
+            }
+
+            function addElement(element, metadata) {
+                const elemMatch = metadata.match(elemPattern);
+                if (elemMatch) {
+                    const name = elemMatch[1];
+                    elems[name] = element.cloneNode(true);
+                    return;
+                }
+                const linkMatch = metadata.match(linkPattern);
+                if (linkMatch) {
+                    const start = linkMatch[1];
+                    const end = linkMatch[2];
+                    links.push({ start, end, node: element.cloneNode(true) });
+                    return;
+                }
+            }
+
+            function buildDiagramReletionships() {
+                for (const elem in elems) {
+                    rels[elems[elem].id] = [];
+                }
+                for (const link of links) {
+                    const start = elems[link.start];
+                    const end = elems[link.end];
+                    rels[link.node.id] = [start, end];
+                    rels[start.id] = [link.node, end];
+                    rels[end.id] = [link.node, start];
+                }
+            }
+
+            function toggleAccentElements(elements, show) {
+                const toggleGroup = (fromGroup, toGroup) => {
+                    const fromElems = fromGroup.childNodes;
+                    for (let i = 0; i < fromElems.length; ) {
+                        const elem = fromElems[i];
+                        if (!elements.includes(elem)) {
+                            toGroup.appendChild(elem);
+                        } else {
+                            i++;
+                        }
+                    }
+                };
+                if (show) {
+                    toggleGroup(front, back);
+                } else {
+                    toggleGroup(back, front);
+                }
+            }
+
+            function onHoverStart(e) {
+                const elem = e.target;
+                const related = rels[elem.id];
+                toggleAccentElements([elem, ...related], true);
+            }
+
+            function onHoverEnd(e) {
+                const elem = e.target;
+                const related = rels[elem.id];
+                toggleAccentElements([elem, ...related], false);
+            }
+
+            function main() {
+                initNavigations();
+                initDiagram();
+            }
+            main();
         </script>
     </body>
 </html>
