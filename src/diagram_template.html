@@ -3,7 +3,7 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <link rel="stylesheet" href="/docs/styles.css" />
+        <link rel="stylesheet" href="{{ rootPath }}styles.css" />
         <title>{{ title }}</title>
     </head>
     <body>
@@ -21,11 +21,22 @@
             function initNavigations() {
                 const backBtn = document.getElementById("backNav");
                 const digram = document.getElementById("diagram");
-                const isRoot = location.pathname == "/docs/";
+                const rootPath = "{{ rootPath }}";
+                const isRoot = location.pathname == rootPath;
                 if (isRoot) {
                     backBtn.style.display = "none";
                 }
-                backBtn.addEventListener("click", () => history.back());
+                backBtn.addEventListener("click", () => {
+                    const current = location.pathname;
+                    const newPath =
+                        "/" +
+                        current
+                            .split("/")
+                            .filter((it) => it)
+                            .slice(0, -1)
+                            .join("/");
+                    location.replace(newPath);
+                });
             }
 
             function initDiagram() {
