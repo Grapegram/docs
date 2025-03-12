@@ -1,0 +1,53 @@
+@startuml "Grapegram system Containers"
+!theme C4_superhero from https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/themes
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+!define ICONURL https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/v3.0.0/icons
+!include ICONURL/common.puml
+!include ICONURL/devicons2/vuejs.puml
+!include ICONURL/devicons2/python.puml
+!include ICONURL/font-awesome-6/mobile.puml
+!include ICONURL/font-awesome-6/desktop.puml
+!include ICONURL/font-awesome-6/users.puml
+
+LAYOUT_TOP_DOWN()
+
+Person(user, "User", $sprite="users")
+System_Boundary(c, "Grapegram") {
+    Container(web, "Web App", "TypeScript, Vue", $link="~/system/web", $sprite="vuejs")
+    Container(mobile, "Mobile App",  $descr="Not in MVP", $sprite="mobile")
+    Container(desktop, "Desktop App", $descr="Not in MVP", $sprite="desktop")
+    Container(backend, "Backend Node", "Python, FastAPI", $link="~/system/backend", $sprite="python")
+    ContainerDb(mainDb, "Main DB", "PostgreSQL 17", "Stores all inforamtion about users, chats, groups and other")
+    ContainerDb(messagesDB, "Messages store DB", "PostgreSQL 17", "Stores messages from chats and groups")
+    ContainerDb(keyValueDB, "Key Value DB", "Redis 7", "Stores cache and all runtime key value data")
+    ContainerQueue(messageQueue, "Messages Queue", "Redis 7", "Transport for business events")
+}
+System_Boundary(c1, "Grapegram External systems") {
+    System(otherNode, "Other grapegam node", "Not in MVP\nOther grapegram backend server node")
+    System(messengersContectors, "Messenger Connector", "Not in MVP\nConnector to other messenger aplication")
+}
+System_Ext(emailSystem, "E-Mail System", "The external e-mail system")
+System_Ext(authSystems, "Multiple Auth Systems", "The external auth systems like: google, facebook, ect")
+
+Rel(user, web, "Visit grapegram-web.netlify.app", "HTTPS")
+Rel(user, mobile, "Uses mobile app")
+Rel(user, desktop, "Uses desktop app")
+
+BiRel(web, backend, "Uses Public Client API", "JSON/HTTPS, Web Socket")
+BiRel(mobile, backend, "Uses Public Client API", "JSON/HTTPS, Web Socket")
+BiRel(desktop, backend, "Uses Public Client API", "JSON/HTTPS, Web Socket")
+
+Rel(backend, mainDb, "Reads and writes data to")
+Rel(backend, keyValueDB, "Reads and writes data to")
+Rel(backend, messagesDB, "Reads and writes data to")
+BiRel(backend, messageQueue, "Send and read events from", "pub/sub")
+
+Lay_D(otherNode, messengersContectors)
+BiRel_R(backend, otherNode, "Uses Public Node API", "JSON/HTTPS")
+Rel_R(backend, messengersContectors, "Uses Public Connector API", "HTTPS, WEB Socket?")
+
+Rel_R(backend, emailSystem, "Send e-mail using", "async, SMTP")
+BiRel(backend, authSystems, "Auth and register users")
+
+@enduml

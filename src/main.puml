@@ -1,0 +1,29 @@
+@startuml "Main Context"
+!theme C4_superhero from https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/themes
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
+
+!define ICONURL https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/v3.0.0/icons
+!include ICONURL/common.puml
+!include ICONURL/font-awesome-6/users.puml
+
+LAYOUT_TOP_DOWN()
+
+AddSystemTag("innerSystem", $bgColor="#f0ad4e")
+
+Person(user, "User", $sprite="users")
+System(system, "Grapegram System", $tags="innerSystem", $link="~/system")
+System_Boundary(c1, "Grapegram External systems") {
+    System(otherNode, "Other grapegam node", "Not in MVP\nOther grapegram backend server node")
+    System(messengersContectors, "Messenger Connector", "Not in MVP\nConnector to other messenger aplication")
+}
+System_Ext(emailSystem, "E-Mail System", "The external e-mail system")
+System_Ext(authSystems, "Multiple Auth Systems", "The external auth systems like: google, facebook, ect")
+
+Rel(user, system, "Uses grapegram site/app");
+BiRel(system, otherNode, "Public Node API", "HTTPS")
+Rel(system, messengersContectors, "Public Connector API", "HTTPS, WEB Socket?")
+
+Rel(system, emailSystem, "Send e-mail using")
+BiRel(system, authSystems, "Auth and register users")
+
+@enduml
