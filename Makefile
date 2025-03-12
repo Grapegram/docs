@@ -1,9 +1,12 @@
 export DOCKER_DEFAULT_PLATFORM=linux/amd64
 
-build: plantuml-server-up
+clear:
+	rm -rf build/*
+
+build: clear plantuml-server-up
 	node scripts/build.js
 
-build-prod: plantuml-server-up
+build-prod: clear plantuml-server-up
 	PROD="prod" node scripts/build.js
 
 publish: build-prod
