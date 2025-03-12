@@ -13,8 +13,8 @@
             var elems = {};
             var links = [];
             var rels = {};
-            var elemPattern = /entity (.*)/;
-            var linkPattern = /link (.*) to (.*)/;
+            var elemPattern = /elem_(.*)/;
+            var linkPattern = /link_(.*)_(.*)/;
             var front = [];
             var back = [];
 
@@ -23,6 +23,7 @@
                 const digram = document.getElementById("diagram");
                 const rootPath = "{{ rootPath }}";
                 const isRoot = location.pathname == rootPath;
+
                 if (isRoot) {
                     backBtn.style.display = "none";
                 }
@@ -42,11 +43,8 @@
             function initDiagram() {
                 const baseEntitiesGroup =
                     diagram.querySelector(`[id^="elem_"]`).parentElement;
-                const entities = baseEntitiesGroup.childNodes;
-                for (var i = 0; i < entities.length; i += 2) {
-                    const metadata = entities[i].textContent;
-                    const elem = entities[i + 1];
-                    addElement(elem, metadata);
+                for (const entity of baseEntitiesGroup.children) {
+                    addElement(entity);
                 }
                 buildDiagramReletionships();
                 bindEntities();
@@ -64,7 +62,8 @@
                 }
             }
 
-            function addElement(element, metadata) {
+            function addElement(element) {
+                const metadata = element.id;
                 const elemMatch = metadata.match(elemPattern);
                 if (elemMatch) {
                     const name = elemMatch[1];
@@ -88,8 +87,8 @@
                     const start = elems[link.start];
                     const end = elems[link.end];
                     rels[link.node.id] = [start, end];
-                    rels[start.id] = [link.node, end];
-                    rels[end.id] = [link.node, start];
+                    rels[start.id] = [...rels[start.id], link.node, end];
+                    rels[end.id] = [...rels[end.id], link.node, start];
                 }
             }
 
