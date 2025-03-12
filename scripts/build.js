@@ -1,18 +1,22 @@
 import fs from "node:fs";
 import path from "node:path";
 
-var DIAGRAMS_FOLDER = "src/diagrams";
+var DIAGRAMS_FOLDER = "src";
 var BUILD_FOLDER = "build";
 var STATIC_FOLDER = "src/static";
 var PAGE_TEMPLATE = "src/diagram_template.html";
-// var PLANTUML_SERVER_URL = "http://www.plantuml.com/plantuml";
 var PLANTUML_SERVER_URL = "http://localhost:8090";
+
+var ROOT_PATH = "/";
+if (process.env.PROD) {
+    ROOT_PATH = "/docs/";
+}
 
 function fillTemplate(template, data) {
   let res = template;
   for (const valueName in data) {
-    res = res.replace(
-      new RegExp(/\{\{\s*/.source + valueName + /\s*\}\}/.source),
+    res = res.replaceAll(
+      new RegExp(/\{\{\s*/.source + valueName + /\s*\}\}/.source, "g"),
       data[valueName],
     );
   }
@@ -26,7 +30,12 @@ function assemblyPageFilePath(parentDirs) {
   return outputPath;
 }
 
+function preprocessUML(code) {
+    return code.replaceAll(/\$link="~\/([^"]*)"/g, `$link="${ROOT_PATH}$1"`)
+}
+
 async function convertUML(code) {
+  code = preprocessUML(code);
   try {
     const encodedCode = Buffer.from(code, "utf-8")
       .toString("hex")
@@ -45,11 +54,16 @@ async function convertUML(code) {
   }
 }
 
+
+function preprocessTemplate(code) {
+    return code;
+}
 async function createPage(diagram, title, outputFile) {
   if (!createPage.template) {
-    createPage.template = await fs.promises.readFile(PAGE_TEMPLATE, "utf-8");
+    const template = await fs.promises.readFile(PAGE_TEMPLATE, "utf-8");
+    createPage.template = preprocessTemplate(template);
   }
-  const pageContent = fillTemplate(createPage.template, { diagram, title });
+    const pageContent = fillTemplate(createPage.template, { diagram, title, rootPath: ROOT_PATH });
   const outputFolder = path.dirname(outputFile);
   await fs.promises.mkdir(outputFolder, { recursive: true });
   await fs.promises.writeFile(outputFile, pageContent);
