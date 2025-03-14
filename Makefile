@@ -3,6 +3,12 @@ export DOCKER_DEFAULT_PLATFORM=linux/amd64
 clear:
 	rm -rf build/*
 
+dev:
+	npm run dev
+
+start-server:
+	npx http-server -p 8888 build
+
 build: clear plantuml-server-up
 	node scripts/build.js
 

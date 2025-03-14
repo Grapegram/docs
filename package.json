@@ -5,8 +5,22 @@
     "license": "ISC",
     "author": "",
     "type": "module",
-    "scripts": {},
+    "watch": {
+        "build": {
+            "patterns": [
+                "src"
+            ],
+            "extensions": "*"
+        }
+    },
+    "scripts": {
+        "build": "make build",
+        "dev": "concurrently \"make start-server\" \"npx npm-watch\""
+    },
     "devDependencies": {
-        "gh-pages": "^6.3.0"
+        "concurrently": "^9.1.2",
+        "gh-pages": "^6.3.0",
+        "http-server": "^14.1.1",
+        "npm-watch": "^0.13.0"
     }
 }
