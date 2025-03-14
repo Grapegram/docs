@@ -8,13 +8,13 @@
 
 LAYOUT_TOP_DOWN()
 
-AddSystemTag("innerSystem", $bgColor="#f0ad4e")
+AddSystemTag("grapegramSystem", $bgColor="#9C36CF")
 
 Person(user, "User", $sprite="users")
-System(system, "Grapegram System", $tags="innerSystem", $link="~/system")
+System(system, "Grapegram System", "Grapegram is a decentralized messenger system", $tags="grapegramSystem", $link="~/system")
 System_Boundary(c1, "Grapegram External systems") {
     System(otherNode, "Other grapegam node", "Not in MVP\nOther grapegram backend server node")
-    System(messengersContectors, "Messenger Connector", "Not in MVP\nConnector to other messenger aplication")
+    System(messengersContectors, "Messenger Connector", "Not in MVP\nConnector to other messenger application like: telegram, matrix, etc")
 }
 System_Ext(emailSystem, "E-Mail System", "The external e-mail system")
 System_Ext(authSystems, "Multiple Auth Systems", "The external auth systems like: google, facebook, ect")

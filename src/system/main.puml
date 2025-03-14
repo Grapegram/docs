@@ -17,7 +17,11 @@ System_Boundary(c, "Grapegram") {
     Container(web, "Web App", "TypeScript, Vue", $link="~/system/web", $sprite="vuejs")
     Container(mobile, "Mobile App",  $descr="Not in MVP", $sprite="mobile")
     Container(desktop, "Desktop App", $descr="Not in MVP", $sprite="desktop")
-    Container(backend, "Backend Node", "Python, FastAPI", $link="~/system/backend", $sprite="python")
+
+    Container(backend, "Backend Node", "Python, FastAPI", "Monolitic main backend", $link="~/system/backend", $sprite="python")
+    Container(backendTasks, "Tasks backend", "Python, Celery", "Process a deferred task provided by the main backend", $link="~/system/backend", $sprite="python")
+    Container(backendCli, "CLI Interface", "Python, click", "Part of backend that runs some main backend services", $link="~/system/backend", $sprite="python")
+
     ContainerDb(mainDb, "Main DB", "PostgreSQL 17", "Stores all inforamtion about users, chats, groups and other")
     ContainerDb(messagesDB, "Messages store DB", "PostgreSQL 17", "Stores messages from chats and groups")
     ContainerDb(keyValueDB, "Key Value DB", "Redis 7", "Stores cache and all runtime key value data")
@@ -25,7 +29,7 @@ System_Boundary(c, "Grapegram") {
 }
 System_Boundary(c1, "Grapegram External systems") {
     System(otherNode, "Other grapegam node", "Not in MVP\nOther grapegram backend server node")
-    System(messengersContectors, "Messenger Connector", "Not in MVP\nConnector to other messenger aplication")
+    System(messengersContectors, "Messenger Connector", "Not in MVP\nConnector to other messenger application like: telegram, matrix, etc")
 }
 System_Ext(emailSystem, "E-Mail System", "The external e-mail system")
 System_Ext(authSystems, "Multiple Auth Systems", "The external auth systems like: google, facebook, ect")
@@ -42,6 +46,8 @@ Rel(backend, mainDb, "Reads and writes data to")
 Rel(backend, keyValueDB, "Reads and writes data to")
 Rel(backend, messagesDB, "Reads and writes data to")
 BiRel(backend, messageQueue, "Send and read events from", "pub/sub")
+BiRel(messageQueue, backendTasks, "Read events from", "pub/sub")
+Rel(backendCli, backend, "Run Main backend service", "pub/sub")
 
 Lay_D(otherNode, messengersContectors)
 BiRel_R(backend, otherNode, "Uses Public Node API", "JSON/HTTPS")
