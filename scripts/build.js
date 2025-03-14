@@ -9,8 +9,9 @@ var PLANTUML_SERVER_URL = "http://localhost:8090";
 
 var ROOT_PATH = "/";
 if (process.env.PROD) {
-    ROOT_PATH = "/docs/";
+  ROOT_PATH = "/docs/";
 }
+
 
 function fillTemplate(template, data) {
   let res = template;
@@ -20,9 +21,9 @@ function fillTemplate(template, data) {
       data[valueName],
     );
   }
-
   return res;
 }
+
 
 function assemblyPageFilePath(parentDirs) {
   const name = "index.html";
@@ -30,9 +31,11 @@ function assemblyPageFilePath(parentDirs) {
   return outputPath;
 }
 
+
 function preprocessUML(code) {
-    return code.replaceAll(/\$link="~\/([^"]*)"/g, `$link="${ROOT_PATH}$1"`)
+  return code.replaceAll(/\$link="~\/([^"]*)"/g, `$link="${ROOT_PATH}$1"`);
 }
+
 
 async function convertUML(code) {
   code = preprocessUML(code);
@@ -56,18 +59,25 @@ async function convertUML(code) {
 
 
 function preprocessTemplate(code) {
-    return code;
+  return code;
 }
+
+
 async function createPage(diagram, title, outputFile) {
   if (!createPage.template) {
     const template = await fs.promises.readFile(PAGE_TEMPLATE, "utf-8");
     createPage.template = preprocessTemplate(template);
   }
-    const pageContent = fillTemplate(createPage.template, { diagram, title, rootPath: ROOT_PATH });
+  const pageContent = fillTemplate(createPage.template, {
+    diagram,
+    title,
+    rootPath: ROOT_PATH,
+  });
   const outputFolder = path.dirname(outputFile);
   await fs.promises.mkdir(outputFolder, { recursive: true });
   await fs.promises.writeFile(outputFile, pageContent);
 }
+
 
 async function processPage(umlContent, parentDirs) {
   const pageFile = assemblyPageFilePath(parentDirs);
@@ -84,6 +94,7 @@ async function processPage(umlContent, parentDirs) {
   console.log(`Converted: ${pageFile}`);
 }
 
+
 async function convertModule(dir, parentDirs = []) {
   const entries = await fs.promises.readdir(dir, { withFileTypes: true });
 
@@ -98,6 +109,7 @@ async function convertModule(dir, parentDirs = []) {
     }
   }
 }
+
 
 async function copyRecursive(src, dest) {
   await fs.promises.mkdir(dest, { recursive: true });
@@ -114,6 +126,7 @@ async function copyRecursive(src, dest) {
     }
   }
 }
+
 
 async function main() {
   await fs.promises.mkdir(BUILD_FOLDER, { recursive: true });
