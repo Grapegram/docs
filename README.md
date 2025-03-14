@@ -30,8 +30,8 @@
 make dev
 ```
 
-### Publish
+### Publish documentation
 
 ```sh
-make publi
+make publish
 ```
