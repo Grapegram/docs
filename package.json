@@ -14,8 +14,9 @@
         }
     },
     "scripts": {
-        "build": "make build",
-        "dev": "concurrently \"make start-server\" \"npx npm-watch\""
+        "build": "node scripts/build.js",
+        "start-server": "http-server -p 8888 build",
+        "dev": "concurrently \"npm run start-server\" \"npx npm-watch\""
     },
     "devDependencies": {
         "concurrently": "^9.1.2",

@@ -5,13 +5,16 @@ var DIAGRAMS_FOLDER = "src";
 var BUILD_FOLDER = "build";
 var STATIC_FOLDER = "src/static";
 var PAGE_TEMPLATE = "src/diagram_template.html";
+
 var PLANTUML_SERVER_URL = "http://localhost:8090";
+if (process.env.ISDOCKER) {
+  var PLANTUML_SERVER_URL = "http://plantuml-server:8080";
+}
 
 var ROOT_PATH = "/";
 if (process.env.PROD) {
   ROOT_PATH = "/docs/";
 }
-
 
 function fillTemplate(template, data) {
   let res = template;
@@ -24,18 +27,15 @@ function fillTemplate(template, data) {
   return res;
 }
 
-
 function assemblyPageFilePath(parentDirs) {
   const name = "index.html";
   const outputPath = path.join(BUILD_FOLDER, ...parentDirs, name);
   return outputPath;
 }
 
-
 function preprocessUML(code) {
   return code.replaceAll(/\$link="~\/([^"]*)"/g, `$link="${ROOT_PATH}$1"`);
 }
-
 
 async function convertUML(code) {
   code = preprocessUML(code);
@@ -57,11 +57,9 @@ async function convertUML(code) {
   }
 }
 
-
 function preprocessTemplate(code) {
   return code;
 }
-
 
 async function createPage(diagram, title, outputFile) {
   if (!createPage.template) {
@@ -78,7 +76,6 @@ async function createPage(diagram, title, outputFile) {
   await fs.promises.writeFile(outputFile, pageContent);
 }
 
-
 async function processPage(umlContent, parentDirs) {
   const pageFile = assemblyPageFilePath(parentDirs);
   const diagram = await convertUML(umlContent);
@@ -93,7 +90,6 @@ async function processPage(umlContent, parentDirs) {
   await createPage(diagram, title, pageFile);
   console.log(`Converted: ${pageFile}`);
 }
-
 
 async function convertModule(dir, parentDirs = []) {
   const entries = await fs.promises.readdir(dir, { withFileTypes: true });
@@ -110,7 +106,6 @@ async function convertModule(dir, parentDirs = []) {
   }
 }
 
-
 async function copyRecursive(src, dest) {
   await fs.promises.mkdir(dest, { recursive: true });
   const entries = await fs.promises.readdir(src, { withFileTypes: true });
@@ -126,7 +121,6 @@ async function copyRecursive(src, dest) {
     }
   }
 }
-
 
 async function main() {
   await fs.promises.mkdir(BUILD_FOLDER, { recursive: true });

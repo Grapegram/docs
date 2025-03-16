@@ -1,0 +1,41 @@
+version: "3.0"
+
+services:
+    grapegram-docs:
+        container_name: grapegram-docs
+        image: grapegram-docs
+        build:
+            context: ${PROJECT_FOLDER}
+            dockerfile: containers/Dockerfile
+        environment:
+            - ISDOCKER=true
+            - PROD=${PROD}
+            - COMMAND=${COMMAND}
+        depends_on:
+            plantuml-server:
+                condition: service_healthy
+        ports:
+            - "8888:8888"
+        volumes:
+            - ${SRC_FOLDER}:/app/src
+            - ${BUILD_FOLDER}:/app/build
+        networks:
+            - custom
+
+    plantuml-server:
+        container_name: plantuml-server
+        image: plantuml/plantuml-server:jetty
+        restart: always
+        healthcheck:
+            test: curl --fail http://localhost:8080/png/SoWkIImgAStDuNBAJrBGjLDmpCbCJbMmKiX8pSd9vt98pKi1IW80 || exit 1
+            interval: 2s
+            timeout: 3s
+            retries: 5
+        ports:
+            - "8090:8080"
+        networks:
+            - custom
+
+networks:
+    custom:
+        driver: bridge
