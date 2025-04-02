@@ -1,19 +1,19 @@
 import fs from "node:fs";
 import path from "node:path";
 
-var DIAGRAMS_FOLDER = "src";
+var DIAGRAMS_FOLDER = "src/diagram";
 var BUILD_FOLDER = "build";
-var STATIC_FOLDER = "src/static";
-var PAGE_TEMPLATE = "src/diagram_template.html";
+var STATIC_FOLDER = "assets";
+var PAGE_TEMPLATE = "templates/diagram_template.html";
 
 var PLANTUML_SERVER_URL = "http://localhost:8090";
 if (process.env.ISDOCKER) {
   var PLANTUML_SERVER_URL = "http://plantuml-server:8080";
 }
 
-var ROOT_PATH = "/";
+var ROOT_PATH = "";
 if (process.env.PROD) {
-  ROOT_PATH = "/docs/";
+  ROOT_PATH = "/docs";
 }
 
 function fillTemplate(template, data) {

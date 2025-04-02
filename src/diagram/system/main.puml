@@ -14,13 +14,13 @@ LAYOUT_TOP_DOWN()
 
 Person(user, "User", $sprite="users")
 System_Boundary(c, "Grapegram") {
-    Container(web, "Web App", "TypeScript, Vue", $link="~/system/web", $sprite="vuejs")
+    Container(web, "Web App", "TypeScript, Vue", $link="~/web", $sprite="vuejs")
     Container(mobile, "Mobile App",  $descr="Not in MVP", $sprite="mobile")
     Container(desktop, "Desktop App", $descr="Not in MVP", $sprite="desktop")
 
-    Container(backend, "Backend Node", "Python, FastAPI", "Monolitic main backend", $link="~/system/backend", $sprite="python")
-    Container(backendTasks, "Tasks backend", "Python, Celery", "Process a deferred task provided by the main backend", $link="~/system/backend", $sprite="python")
-    Container(backendCli, "CLI Interface", "Python, click", "Part of backend that runs some main backend services", $link="~/system/backend", $sprite="python")
+    Container(backend, "Backend Node", "Python, FastAPI", "Monolitic main backend", $link="~/backend", $sprite="python")
+    Container(backendTasks, "Tasks backend", "Python, Celery", "Process a deferred task provided by the main backend", $link="~/backend", $sprite="python")
+    Container(backendCli, "CLI Interface", "Python, click", "Part of backend that runs some main backend services", $link="~/backend", $sprite="python")
 
     ContainerDb(mainDb, "Main DB", "PostgreSQL 17", "Stores all inforamtion about users, chats, groups and other")
     ContainerDb(messagesDB, "Messages store DB", "PostgreSQL 17", "Stores messages from chats and groups")
