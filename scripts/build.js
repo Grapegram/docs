@@ -33,12 +33,14 @@ function assemblyPageFilePath(parentDirs) {
   return outputPath;
 }
 
-function preprocessUML(code) {
-  return code.replaceAll(/\$link="~\/([^"]*)"/g, `$link="${ROOT_PATH}$1"`);
+function preprocessUML(code, relativePath) {
+  return code
+    .replaceAll(/\$link="\/([^"]*)"/g, `$link="${ROOT_PATH}/$1"`)
+    .replaceAll(/\$link="~\/([^"]*)"/g, `$link="${ROOT_PATH}/${relativePath}$1"`);
 }
 
-async function convertUML(code) {
-  code = preprocessUML(code);
+async function convertUML(code, relativePath) {
+  code = preprocessUML(code, relativePath);
   try {
     const encodedCode = Buffer.from(code, "utf-8")
       .toString("hex")
@@ -78,7 +80,10 @@ async function createPage(diagram, title, outputFile) {
 
 async function processPage(umlContent, parentDirs) {
   const pageFile = assemblyPageFilePath(parentDirs);
-  const diagram = await convertUML(umlContent);
+  let relativePath = parentDirs.join('/');
+  relativePath =  relativePath ? relativePath + "/" : "";
+  console.log(relativePath)
+  const diagram = await convertUML(umlContent, relativePath);
 
   let title;
   if (parentDirs.length === 0) {
