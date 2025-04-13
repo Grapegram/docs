@@ -1,0 +1,55 @@
+## Grapegram
+
+ - User Account
+    - Store and change user info
+        - Avatar
+        - Name
+        - Nickname
+        - Email
+        - ?Phone number
+ - Chat
+    - Group
+        - Use CS for creation chat and grant creator all permissions
+        - Add user with default permissions
+        - Other relied to CS
+    - Direct
+        - Use CS for create chat between 2 users and grant 2 users full permissions
+        - Use CS for delete chat between 2 users
+        - Other relied to CS
+    - Chatting System
+        - Create Chat
+        - Delete Chat
+        - Add User to chat
+        - Remove User from chat
+        - Mennage User permissions
+            - User permissions: All chat actions
+            - grand user
+        - Save chat history
+        - Send messages
+        - Edit messages
+        - Delete messages
+        - Reply to messages (not in MVP)
+        - Forward messages (not in MVP)
+        - End-to-End encryption for messages (not In MVP)
+ - Contacts
+    - Add user to contacts from main Grapegram node
+    - Add user from external Grapegram node (not in MVP)
+    - Remove user form contacts from main Grapegram node
+    - Remove user form contacts from external Grapegram node  (not in MVP)
+ - Auth
+    - Register User
+    - Login User
+    - Logout User
+    - Logout User form other device
+ - External Nodes API (not in MVP)
+ - AI Models API
+    - Example Model (AI Mentor)
+        - Answer student questions
+        - flexible personalization of the AI agent to the user's communication style, task area, and level of knowledge.
+        - OpenAI API as base
+        - IT specialization
+    - Connect model to chat
+    - Remove model form chat
+    - Add model to user account (direct chatting with model)
+    - Remove model to user account (direct chatting with model)
+ - Messager Connectors (not in MVP)
